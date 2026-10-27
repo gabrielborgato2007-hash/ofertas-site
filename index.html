@@ -1,0 +1,231 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Encontre ofertas e produtos selecionados para facilitar suas compras.">
+  <title>Ofertas do Dia | Encontre sua próxima oferta</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f5f6f8;
+      color: #202124;
+    }
+    header {
+      background: #ffe600;
+      padding: 22px 6%;
+    }
+    .brand { font-size: 27px; font-weight: 800; }
+    .subtitle { margin-top: 6px; font-size: 14px; }
+    .hero {
+      background: #fff;
+      padding: 32px 6%;
+      text-align: center;
+    }
+    .hero h1 { margin: 0 0 10px; font-size: 30px; }
+    .hero p { color: #5f6368; }
+    .search {
+      width: 100%;
+      max-width: 480px;
+      padding: 13px;
+      border: 1px solid #ddd;
+      border-radius: 9px;
+      font-size: 16px;
+      margin-top: 12px;
+    }
+    main { padding: 26px 6%; max-width: 1200px; margin: auto; }
+    .categories {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 28px;
+    }
+    .category {
+      border: 0;
+      padding: 11px 16px;
+      border-radius: 22px;
+      background: white;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    .category.active { background: #202124; color: white; }
+    h2 { font-size: 22px; }
+    .products {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 18px;
+    }
+    .product {
+      background: white;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid #ececec;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+    }
+    .product .emoji {
+      height: 105px;
+      display: grid;
+      place-items: center;
+      font-size: 58px;
+      background: #f8f8f8;
+      border-radius: 8px;
+    }
+    .tag {
+      color: #18794e;
+      font-size: 12px;
+      font-weight: bold;
+      margin-top: 15px;
+    }
+    .product h3 { font-size: 17px; line-height: 1.4; }
+    .product p { color: #666; font-size: 13px; line-height: 1.5; }
+    .price { font-size: 21px; font-weight: 800; margin: 8px 0 16px; }
+    .buy {
+      display: block;
+      text-align: center;
+      text-decoration: none;
+      background: #ffe600;
+      color: #202124;
+      padding: 13px;
+      border-radius: 8px;
+      font-weight: bold;
+      margin-top: auto;
+    }
+    .notice {
+      font-size: 12px;
+      color: #666;
+      line-height: 1.6;
+      margin-top: 25px;
+    }
+    footer {
+      background: #202124;
+      color: white;
+      padding: 25px 6%;
+      font-size: 13px;
+      line-height: 1.7;
+    }
+    footer a { color: #ffe600; }
+    @media (max-width: 480px) {
+      .hero h1 { font-size: 25px; }
+      .products { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+      .product { padding: 12px; }
+      .product .emoji { height: 80px; font-size: 42px; }
+      .product h3 { font-size: 14px; }
+      .price { font-size: 17px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">Ofertas do Dia</div>
+    <div class="subtitle">Produtos selecionados para você encontrar boas ofertas.</div>
+  </header>
+
+  <section class="hero">
+    <h1>Encontre sua próxima oferta</h1>
+    <p>Explore produtos e confira os detalhes no site do vendedor.</p>
+    <input class="search" id="search" type="search"
+      placeholder="Buscar produto..." aria-label="Buscar produto">
+  </section>
+
+  <main>
+    <nav class="categories" aria-label="Categorias">
+      <button class="category active" data-category="Todos">Todos</button>
+      <button class="category" data-category="Tecnologia">Tecnologia</button>
+      <button class="category" data-category="Casa">Casa</button>
+      <button class="category" data-category="Acessórios">Acessórios</button>
+    </nav>
+
+    <h2>Produtos em destaque</h2>
+    <div class="products" id="products"></div>
+
+    <p class="notice">
+      Os produtos e preços devem ser conferidos na página do vendedor.
+      Alguns links podem gerar comissão para este site, sem custo adicional
+      para você. Este site é independente e não representa oficialmente
+      o Mercado Livre.
+    </p>
+  </main>
+
+  <footer>
+    <strong>Ofertas do Dia</strong>
+    <p>Confira sempre o preço, o frete e as condições antes de comprar.</p>
+    <p>Divulgação de links de afiliado. As ofertas estão sujeitas a alterações.</p>
+  </footer>
+
+  <script>
+    // Exemplos de layout. Substitua pelos produtos reais antes de publicar.
+    const products = [
+      { name: "Fone de ouvido", category: "Tecnologia", emoji: "🎧" },
+      { name: "Acessório para celular", category: "Tecnologia", emoji: "📱" },
+      { name: "Organizador para casa", category: "Casa", emoji: "🏠" },
+      { name: "Mochila para o dia a dia", category: "Acessórios", emoji: "🎒" }
+    ];
+
+    let selectedCategory = "Todos";
+    const container = document.getElementById("products");
+    const search = document.getElementById("search");
+
+    function renderProducts() {
+      const term = search.value.toLocaleLowerCase("pt-BR");
+      const filtered = products.filter(p =>
+        (selectedCategory === "Todos" || p.category === selectedCategory) &&
+        p.name.toLocaleLowerCase("pt-BR").includes(term)
+      );
+
+      container.innerHTML = "";
+
+      if (!filtered.length) {
+        container.textContent = "Nenhum produto encontrado.";
+        return;
+      }
+
+      filtered.forEach(p => {
+        const card = document.createElement("article");
+        card.className = "product";
+
+        const emoji = document.createElement("div");
+        emoji.className = "emoji";
+        emoji.textContent = p.emoji;
+
+        const tag = document.createElement("div");
+        tag.className = "tag";
+        tag.textContent = p.category;
+
+        const title = document.createElement("h3");
+        title.textContent = p.name;
+
+        const description = document.createElement("p");
+        description.textContent = "Consulte preço e disponibilidade no vendedor.";
+
+        const button = document.createElement("a");
+        button.className = "buy";
+        button.textContent = "Ver produto";
+        button.href = "https://www.mercadolivre.com.br/";
+        button.target = "_blank";
+        button.rel = "noopener noreferrer";
+
+        card.append(emoji, tag, title, description, button);
+        container.appendChild(card);
+      });
+    }
+
+    document.querySelectorAll(".category").forEach(button => {
+      button.addEventListener("click", () => {
+        selectedCategory = button.dataset.category;
+        document.querySelectorAll(".category").forEach(b =>
+          b.classList.toggle("active", b === button)
+        );
+        renderProducts();
+      });
+    });
+
+    search.addEventListener("input", renderProducts);
+    renderProducts();
+  </script>
+</body>
+</html>
